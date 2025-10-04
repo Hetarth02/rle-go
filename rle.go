@@ -89,56 +89,6 @@ func str_decode(str string) string {
 	return og_str.String()
 }
 
-// Stores as an encoded string with most repeating frequency stripped off
-func str_encode_without_one(str string) string {
-	var rle_str strings.Builder
-	char_count := 0
-	var prev_char byte
-	var curr_char byte
-
-	for index := 1; index < len(str); index++ {
-		char_count += 1
-		prev_char = str[index-1]
-		curr_char = str[index]
-
-		if prev_char != curr_char || char_count == 9 {
-			write_str := fmt.Sprintf("%d%s", char_count, string(prev_char))
-			if char_count == 1 {
-				write_str = fmt.Sprintf("%s", string(prev_char))
-			}
-			rle_str.WriteString(write_str)
-			char_count = 0
-		}
-	}
-
-	char_count += 1
-	write_str := fmt.Sprintf("%d%s", char_count, string(prev_char))
-	if char_count == 1 {
-		write_str = fmt.Sprintf("%s", string(prev_char))
-	}
-	rle_str.WriteString(write_str)
-
-	return rle_str.String()
-}
-
-func str_decode_without_one(str string) string {
-	var og_str strings.Builder
-	var count int64
-	var ok error
-
-	for index := 0; index < len(str); index++ {
-		count, ok = strconv.ParseInt(string(str[index]), 10, 0)
-		if ok != nil {
-			og_str.WriteString(string(str[index]))
-		} else {
-			index += 1
-			og_str.WriteString(strings.Repeat(string(str[index]), int(count)))
-		}
-	}
-
-	return og_str.String()
-}
-
 // Determine maximum occuring number from encoded string
 func determine_max_frequency(str string) int {
 	// Since we only have buckets of 9 we can have an fixed array
@@ -248,13 +198,6 @@ func main() {
 		fmt.Println(str_encode(og_str))
 		fmt.Println("Do the original and decompressed strings match: ", str_decode(str_encode(og_str)) == og_str)
 		fmt.Println("Original Size: ", len(og_str), "bytes", " | ", "Compressed Size: ", len(str_encode(og_str)), "bytes")
-
-		fmt.Println("")
-
-		fmt.Println("Encode without one")
-		fmt.Println(str_encode_without_one(og_str))
-		fmt.Println("Do the original and decompressed strings match: ", str_decode_without_one(str_encode_without_one(og_str)) == og_str)
-		fmt.Println("Original Size: ", len(og_str), "bytes", " | ", "Compressed Size: ", len(str_encode_without_one(og_str)), "bytes")
 
 		fmt.Println("")
 
